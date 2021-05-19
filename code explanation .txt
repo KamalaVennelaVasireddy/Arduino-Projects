@@ -1,0 +1,60 @@
+First, we create variables for the trigger and echo pin called trig Pin and echo Pin, respectively. The trigger pin is connected to digital pin 11, and the echo pins is connected to digital pin 12:
+
+Const int trigPin = 3; 
+Const int echoPin = 2;
+
+We also create three variables of type long: duration, cm and inch. 
+The duration variable saves the time between the emission and reception of the signal. 
+The cm variable will save the distance in centimeters. 
+The inch variable will save the distance in inches.
+
+long duration, cm, inches;
+
+In the setup()
+we initialize the serial port at a baud rate of 9600 
+set the trigger pin as an output and the echo pin as an input 
+initialize the interface to the LCD display
+
+Serial.begin (9600);
+pinMode(trigPin, OUTPUT);
+pinMode(echoPin, INPUT);
+lcd.init();
+lcd.begin(16, 2);
+lcd.backlight();
+
+In the loop(), 
+we send a short low pulse followed by a long HIGH pulse in order to trigger the ultrasonic sensor. The LOW pulse ensures a clean HIGH pulse. 
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  
+Then, we read the signal from the sensor – a HIGH pulse whose duration is the time in microseconds from the sending of the signal to the reception of its echo to an object.
+
+duration = pulseIn(echoPin, HIGH);
+
+We now convert the duration to a distance. We can calculate the distance by using the following formula:
+
+distance = (traveltime/2) x speed of sound
+
+The speed of sound is: 343m/s = 0.0343 cm/uS = 1/29.1 cm/uS
+In inches, 13503.9in/s = 0.0135in/uS = 1/74in/uS
+
+We divide the traveltime by 2 as we have to take into account that the wave was sent, hit the object, and then returned back to the sensor.
+
+Cm = duration * 0.0340 / 2;
+Inch = duration * 0.01330 / 2;
+
+We print the results in the Serial Monitor
+
+  lcd.setCursor(0, 0);
+  lcd.print("Distance: ");
+  Serial.println(Cm);
+  lcd.print(Cm);
+  lcd.print(" centimeter");
+  lcd.setCursor(0, 1);
+  lcd.print("    ");
+  lcd.print(Inch);
+  lcd.print(" inch");
+
